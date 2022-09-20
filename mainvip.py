@@ -2,7 +2,7 @@
 
 import base64
 import requests
-
+from signal import signal, SIGINT
 from colorama import init
 from requests import get,post
 init()
@@ -45,6 +45,12 @@ if client.api.lower()!='none' or client.api.lower()!='no':
     solver = TwoCaptcha(api_key, defaultTimeout=100, pollingInterval=5)
 failtime=0
 codefail=''      
+def signal_handler(sig: object, frame: object):
+	sleep(0.5)
+	ui.slowPrinting(f"\n{color.fail}[INFO] {color.reset}Detected Ctrl + C, Stopping...")
+	raise KeyboardInterrupt
+
+signal(SIGINT, signal_handler)
 bot = discum.Client(token=client.token, log=False, build_num=0, x_fingerprint="None", user_agent=[
 	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36/PAsMWa7l-11',
 	'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 YaBrowser/20.8.3.115 Yowser/2.5 Safari/537.36',
