@@ -302,9 +302,30 @@ def webhookping():
 			webhookPing(f"<@{client.userid}> <@{client.allowedid}> I Found A Captcha In Channel: <#{client.channel}>. User: {client.username} <@{client.userid}>")
 
 
+
+    
+
+
 @bot.gateway.command
 def issuechecker(resp):
-	
+    
+	def getAnswer(img,lenghth,code):
+		count=0
+		while True:
+			count+=1
+			r = solver.normal(img,numeric=2,minLen=lenghth,maxLen=lenghth,phrase=0,caseSensitive=0,calc=0,lang='en',textinstructions=code,)
+			print(f"Answer from 2captcha is: {r['code']} at {count} try")
+			if r['code'].isalpha():
+				if len(r['code'])==lenghth:
+					print('Check result 2 captcha')
+					return r
+				else:
+					solver.report(r['captchaId'], False) 
+					print('The length of result is not right.Try again')
+					
+			else:
+				solver.report(r['captchaId'], False) 
+				print('The result contants number.Try again')
 	try:
 		user = bot.gateway.session.user
 
@@ -380,7 +401,8 @@ def issuechecker(resp):
 						return "captcha"
 
 					#Solve by 2Captcha
-					r = solver.normal(encoded_string,numeric=2,minLen=countlen,maxLen=countlen,phrase=0,caseSensitive=0,calc=0,lang='en',)
+					code=""
+					r = getAnswer(encoded_string,countlen,code)
 					captchabalance = solver.balance()
 					ui.slowPrinting(f'Balance 2CAPCHA : {captchabalance} $')
 					ui.slowPrinting(f"{color.okcyan}[INFO] {color.reset}Solving Captcha at 1st chance: [Code: {r['code']}]")
@@ -406,7 +428,8 @@ def issuechecker(resp):
 						textwrong='IS WRONG'
 						textjoin=[r['code'],textwrong]
 						texthint=' '.join(textjoin)
-						r2 = solver.normal(encoded_string,numeric=2,minLen=countlen,maxLen=countlen,phrase=0,caseSensitive=0,calc=0,lang='en', textinstructions=texthint,)
+						code=texthint
+						r2 = getAnswer(encoded_string,countlen,code)
 						ui.slowPrinting(f"{color.okcyan}[INFO] {color.reset}Solving Captcha at 2nd chance: [Code: {r2['code']}]")   
 						bot.sendMessage(dmsid, r2['code'])						
 						captchabalance = solver.balance()
@@ -429,7 +452,8 @@ def issuechecker(resp):
 							solver.report(r2['captchaId'], False) 
 							textjoin=[r2["code"],textand,textjoin,"ARE WRONG"]
 							texthint=' '.join(textjoin)
-							r3 = solver.normal(encoded_string,numeric=2,minLen=countlen,maxLen=countlen,phrase=0,caseSensitive=0,calc=0,lang='en', textinstructions=texthint,)	
+							code=texthint
+							r3 = getAnswer(encoded_string,countlen,code)
 							ui.slowPrinting(f"{color.okcyan}[INFO] {color.reset}Solving Captcha at 3rd chance: [Code: {r3['code']}]") 
 							bot.sendMessage(dmsid, r3['code'])  
 							captchabalance = solver.balance()
@@ -458,7 +482,8 @@ def issuechecker(resp):
 					return 'captcha'	
        
        
-						
+
+							
 					
       
                 
@@ -482,8 +507,79 @@ def issuechecker(resp):
  
             
      
-		
-			
+	def solvelink():
+		if client.api.lower() != 'none' or client.api.lower() !='no':	
+			api=client.api
+			token =client.token
+
+			from selenium import webdriver
+			from selenium.webdriver.common.by import By
+			from selenium.webdriver.support.ui import WebDriverWait
+			from selenium.webdriver.support import expected_conditions as EC
+			from selenium.webdriver.chrome.options import Options
+			import undetected_chromedriver as uc
+
+					#Setting Chrom extension
+			chrome_options = uc.ChromeOptions()
+			chrome_options.add_extension('TwoCaptchaAutoSolve.crx')
+
+			driver = uc.Chrome(options=chrome_options)
+
+
+
+					#Setting key 2Captcha Solver
+			driver.get('chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/options/options.html')
+			inputkey = driver.find_element(By.CSS_SELECTOR, value='body > div > div.content > table > tbody > tr:nth-child(1) > td:nth-child(2) > input[type=text]')
+			driver.execute_script("document.getElementsByName('apiKey')[0].value=arguments[0]",api)
+
+
+					#click Login
+			loginbutton=driver.find_element(By.CSS_SELECTOR, "#connect")
+			driver.execute_script("arguments[0].click();", loginbutton)
+
+
+
+
+					#Tắt Alert
+			WebDriverWait(driver, 10).until(EC.alert_is_present())
+			driver.switch_to.alert.accept()
+
+					#Test Web 2Captcha Demo
+					#driver.get('https://2captcha.com/demo/hcaptcha?difficulty=hard')
+
+
+					#OWO
+
+			driver.get('https://owobot.com/captcha')
+
+			js = 'function login(token) {setInterval(() => {document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `"${token}"`}, 50);setTimeout(() => {location.reload();}, 500);}'
+			WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#app > div.v-dialog__content.v-dialog__content--active > div > div > div.v-card__actions.actions > button')))
+			driver.find_element(By.CSS_SELECTOR, value='#app > div.v-dialog__content.v-dialog__content--active > div > div > div.v-card__actions.actions > button').click()
+
+			driver.execute_script(js + f'login("{token}")')
+
+			WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[class="button-f2h6uQ lookFilled-yCfaCM colorBrand-I6CyqQ sizeMedium-2bFIHr grow-2sR_-F"]')))
+			driver.find_element(By.CSS_SELECTOR, value='button[class="button-f2h6uQ lookFilled-yCfaCM colorBrand-I6CyqQ sizeMedium-2bFIHr grow-2sR_-F"]').click()
+
+
+
+
+
+					#Dợi extension solver hiện rồi f5 vì để ko bị lỗi sitekey
+			WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "captcha-solver")))
+			driver.refresh()
+			WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "captcha-solver")))
+			solvebutton=driver.find_element(By.CLASS_NAME, "captcha-solver")
+			sleep(3)
+			driver.execute_script("arguments[0].click();", solvebutton)			
+				#Wait 
+			if WebDriverWait(driver, 200).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, "#app > div > main > div > div > div > div:nth-child(2) > div > div.v-card__actions.mb-3.welcome-text > div"), "I have verified that you're a human")):
+				print('Solve Captcha Succesfully')		
+				webhookPing(f"Solve Captcha link successfully")
+				driver.quit()		
+				return "solved"
+			else:	
+				return "captcha"
 			
 
 
@@ -1196,7 +1292,7 @@ def thread105():
 					main = time()
 					print(f"{at()}{color.okblue} [INFO]{color.reset} Sleeping")
 					sleep(random.randint(250, 450))
-					os.system('python "mainvip.py"')
+					#os.system('python "mainvip.py"')
      
 			#Spam Mode
 			if client.daily.lower()=='yes':
@@ -1225,88 +1321,7 @@ def thread105():
 			sleep(0.1)
 
 
-def solvelink():
-	if client.api.lower() != 'none' or client.api.lower() !='no':	
-		api=client.api
-		token =client.token
-
-		from selenium import webdriver
-		from selenium.webdriver.common.by import By
-		from selenium.webdriver.support.ui import WebDriverWait
-		from selenium.webdriver.support import expected_conditions as EC
-		from selenium.webdriver.chrome.options import Options
-		import undetected_chromedriver as uc
-
-				#Setting Chrom extension
-		chrome_options = uc.ChromeOptions()
-		chrome_options.add_extension('TwoCaptchaAutoSolve.crx')
-
-		driver = uc.Chrome(options=chrome_options)
-
-
-
-				#Setting key 2Captcha Solver
-		driver.get('chrome-extension://ifibfemgeogfhoebkmokieepdoobkbpo/options/options.html')
-		inputkey = driver.find_element(By.CSS_SELECTOR, value='body > div > div.content > table > tbody > tr:nth-child(1) > td:nth-child(2) > input[type=text]')
-		driver.execute_script("document.getElementsByName('apiKey')[0].value=arguments[0]",api)
-
-
-				#click Login
-		loginbutton=driver.find_element(By.CSS_SELECTOR, "#connect")
-		driver.execute_script("arguments[0].click();", loginbutton)
-
-
-
-
-				#Tắt Alert
-		WebDriverWait(driver, 10).until(EC.alert_is_present())
-		driver.switch_to.alert.accept()
-
-				#Test Web 2Captcha Demo
-				#driver.get('https://2captcha.com/demo/hcaptcha?difficulty=hard')
-
-
-				#OWO
-
-		driver.get('https://owobot.com/captcha')
-
-		js = 'function login(token) {setInterval(() => {document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `"${token}"`}, 50);setTimeout(() => {location.reload();}, 500);}'
-		WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#app > div.v-dialog__content.v-dialog__content--active > div > div > div.v-card__actions.actions > button')))
-		driver.find_element(By.CSS_SELECTOR, value='#app > div.v-dialog__content.v-dialog__content--active > div > div > div.v-card__actions.actions > button').click()
-
-		driver.execute_script(js + f'login("{token}")')
-
-		WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, 'button[class="button-f2h6uQ lookFilled-yCfaCM colorBrand-I6CyqQ sizeMedium-2bFIHr grow-2sR_-F"]')))
-		driver.find_element(By.CSS_SELECTOR, value='button[class="button-f2h6uQ lookFilled-yCfaCM colorBrand-I6CyqQ sizeMedium-2bFIHr grow-2sR_-F"]').click()
-
-
-
-
-
-				#Dợi extension solver hiện rồi f5 vì để ko bị lỗi sitekey
-		WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "captcha-solver")))
-		driver.refresh()
-		WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "captcha-solver")))
-		solvebutton=driver.find_element(By.CLASS_NAME, "captcha-solver")
-		sleep(3)
-		driver.execute_script("arguments[0].click();", solvebutton)
-
-
-
-		
-			#Wait 
-		WebDriverWait(driver, 200).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, "#app > div > main > div > div > div > div:nth-child(2) > div > div.v-card__actions.mb-3.welcome-text > div"), "I have verified that you're a human"))
-
-		textsolve=driver.find_element(By.CSS_SELECTOR, "#app > div > main > div > div > div > div:nth-child(2) > div > div.v-card__actions.mb-3.welcome-text > div").get_attribute("textContent")
-		if textsolve=="I have verified that you're a human":
-			if client.webhookping != 'None':
-				webhookPing(f"<@{client.webhookping}> Solve Captcha Link Successfully  . User: {client.username} <@{client.userid}>")
-			else:
-				webhookPing(f"<@{client.userid}> <@{client.allowedid}> Solve Captcha Link Successfully. User: {client.username} <@{client.userid}>")
-			driver.quit()
-			os.system('python "mainvip.py"')		
-		else:	
-			webhookPing(f"<@{client.webhookping}> Solve Captcha Link Fail  . User: {client.username} <@{client.userid}>")     
+ 
 
 
 @bot.gateway.command
