@@ -5,14 +5,18 @@
 
 * This Auto use Python and Selenium 
 
-# Discord-selfbot-owo-bot-MODED
+# ELSA-OwO-Selfbot version Full
 
-**Keep In Mind This Repository Is For Educational Purposes Only. Selfbot are against Discord's ToS and against OwO's Rules! Use It At Your Own Risk!**
+**Keep In Mind This Repository Is For Educational Purposes Only.** 
+
+**Selfbot are against Discord's ToS and against OwO's Rules! Use It At Your Own Risk!**
 
 
 * ### [Download Lastest Origin Release](https://github.com/ahihiyou20/discord-selfbot-owo-bot/tags)
 
-* ### [Download Lastest Modded Release](https://github.com/ThanhThanhCute2k7/Custom-VIP-OwO-Auto)
+* ### [Download Lastest Modded Simple Release](https://github.com/FrozenQueenElsa0903/Elsa-Owo-Selfbot-ver-Simple)
+
+* ### [Download Lastest Modded Full Release](https://github.com/FrozenQueenElsa0903/Elsa-Owo-Selfbot-ver-Full)
 
 
 # Install Selenium and Chrome Driver first
