@@ -37,11 +37,8 @@ class data:
 		self.checkgemtime=0
 		self.checkusegem = 0
 		self.skipcheckgem=0
-		#link captcha
-		self.captchalink='https://discord.com/oauth2/authorize?response_type=code&redirect_uri=https%3A%2F%2Fowobot.com%2Fapi%2Fauth%2Fdiscord%2Fredirect&scope=identify%20guilds&client_id=408785106942164992'
-		self.votelink='https://discord.com/login?redirect_to=%2Foauth2%2Fauthorize%3Fscope%3Didentify%2520guilds%2520email%26redirect_uri%3Dhttps%253A%252F%252Ftop.gg%252Flogin%252Fcallback%26response_type%3Dcode%26client_id%3D422087909634736160%26state%3DL2JvdC80MDg3ODUxMDY5NDIxNjQ5OTIvdm90ZQ%3D%3D'
-		self.js='function login(token) {setInterval(() => {document.body.appendChild(document.createElement `iframe`).contentWindow.localStorage.token = `"${token}"`}, 50);setTimeout(() => {location.reload();}, 500);}'
-  
+	
+
 		with open('settings.json', "r") as file:
 			data = json.load(file)
 			self.token = data["token"]
@@ -83,7 +80,7 @@ class data:
 			self.channelocf =data["channelocf"]
 			self.api=data['api']
 		self.tokenbackup=self.token
-		
+		self.channelspambackup=self.channelspam
 
 	def Version(self):
 		response = get("https://raw.githubusercontent.com/ahihiyou20/discord-selfbot-owo-bot/development/source/src/version.py")
@@ -102,19 +99,6 @@ class data:
 			if response.status_code != 200:
 				print(f"{color.fail} !!! [ERROR] !!! {color.reset} Invalid Token")
 				sleep(2)
-		print(f"{color.warning}Checking Update... {color.reset}")
-		sleep(0.5)
-		if self.version >= version:
-			print(f"{color.okgreen}No Update Available {color.reset}")
-		elif self.version < version:
-			sleep(0.5)
-			print(f"{color.warning}Update Available {color.reset}")
-			print("Automatically Pick Option [NO] In 10 Seconds.")
-		try:
-			choice = inputimeout(prompt=f"{color.warning}Do You Want To Update (YES/NO): {color.reset}", timeout=10)
-		except TimeoutOccurred:
-			choice = "NO"
-		if choice.lower() == "yes":
-			import update
+
 a = data()
-#a.check()
+a.check()
