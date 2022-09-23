@@ -15,12 +15,12 @@ class UI:
 	@classmethod
 	def logo(cls):
 		print(f'{color.okcyan}{elsa}{color.reset}')
-		print(f"                   {color.purple}Version: {version} moded VIP{color.reset}")
+		print(f"                   {color.purple}Version: ELSA-{version} moded VIP{color.reset}")
 		time.sleep(0.5)
 		print()
 		print("╔═════════════════════════════════════════════════════════════════════════════════╗")
 		print()
-		print(f" {color.yellow}This is the moded auto by {color.okcyan}Iris {color.yellow}({color.okcyan}ThanhThanh2k7{color.yellow}). {color.reset}")
+		print(f" {color.yellow}This is the moded auto by {color.okcyan}Iris {color.yellow}({color.okcyan}FrozenQueenElsa{color.yellow}). {color.reset}")
 		print(f" {color.yellow}Thanks to {color.okcyan}ahihiyou20{color.yellow} for the original version{color.reset}")
 		print(f" {color.yellow}Thanks to {color.okcyan}Naru2203{color.yellow} for the auto owo slot version{color.reset}")
 		print()
