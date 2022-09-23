@@ -277,21 +277,26 @@ def issuechecker(resp):
     
 	def getAnswer(img,lenghth,code):
 		count=0
+		timeanswer=time()
 		while True:
-			count+=1
-			r = solver.normal(img,numeric=2,minLen=lenghth,maxLen=lenghth,phrase=0,caseSensitive=0,calc=0,lang='en',textinstructions=code,)
-			print(f"Answer from 2captcha is: {r['code']} at {count} try")
-			if r['code'].isalpha():
-				if len(r['code'])==lenghth:
-					print('Check result 2 captcha')
-					return r
+			if time() - timeanswer < 300 :
+				count+=1
+				r = solver.normal(img,numeric=2,minLen=lenghth,maxLen=lenghth,phrase=0,caseSensitive=0,calc=0,lang='en',textinstructions=code,)
+		
+				if r['code'].isalpha():
+					if len(r['code'])==lenghth:
+						print('Check result 2 captcha')
+						return r
+					else:
+						solver.report(r['captchaId'], False) 
+						print(f'Time: {count}. The length of result {r["code"]} is not right.Try again')
+						
 				else:
 					solver.report(r['captchaId'], False) 
-					print('The length of result is not right.Try again')
-					
+					print(f'Time: {count}. The result {r["code"]} contants number.Try again')
 			else:
-				solver.report(r['captchaId'], False) 
-				print('The result contants number.Try again')
+				print(f'TIME OUT 5 MINUTES for SOLVE')
+				return 'captcha'
 	try:
 		user = bot.gateway.session.user
 
@@ -369,6 +374,11 @@ def issuechecker(resp):
 					#Solve by 2Captcha
 					code=""
 					r = getAnswer(encoded_string,countlen,code)
+					try:
+						if r=='captcha':
+							return 'captcha'
+					except:
+						pass
 					captchabalance = solver.balance()
 					ui.slowPrinting(f'Balance 2CAPCHA : {captchabalance} $')
 					ui.slowPrinting(f"{color.okcyan}[INFO] {color.reset}Solving Captcha at 1st chance: [Code: {r['code']}]")
@@ -396,6 +406,11 @@ def issuechecker(resp):
 						texthint=' '.join(textjoin)
 						code=texthint
 						r2 = getAnswer(encoded_string,countlen,code)
+						try:
+							if r=='captcha':
+								return 'captcha'
+						except:
+							pass
 						ui.slowPrinting(f"{color.okcyan}[INFO] {color.reset}Solving Captcha at 2nd chance: [Code: {r2['code']}]")   
 						bot.sendMessage(dmsid, r2['code'])						
 						captchabalance = solver.balance()
@@ -420,6 +435,11 @@ def issuechecker(resp):
 							texthint=' '.join(textjoin)
 							code=texthint
 							r3 = getAnswer(encoded_string,countlen,code)
+							try:
+								if r=='captcha':
+									return 'captcha'
+							except:
+								pass
 							ui.slowPrinting(f"{color.okcyan}[INFO] {color.reset}Solving Captcha at 3rd chance: [Code: {r3['code']}]") 
 							bot.sendMessage(dmsid, r3['code'])  
 							captchabalance = solver.balance()
@@ -604,7 +624,7 @@ def issuechecker(resp):
 					
 def changeChannel() -> str:
 		channel2 = []
-		guildspamID = bot.getChannel(client.channelspam).json()['guild_id']
+		guildspamID = bot.getChannel(client.channelspambackup).json()['guild_id']
 		channels = bot.gateway.session.guild(guildspamID).channels
 		for i in channels:
 			if channels[i]['type'] == "guild_text":
