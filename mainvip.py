@@ -67,8 +67,7 @@ while True:
 	except TimeoutOccurred:
 		choice = "1"
 	if choice == "1":
-		if client.api.lower()=='none' or client.api.lower()=='no':
-			
+		if client.api.lower()=='none' or client.api.lower()=='no':			
 			try:
 				print('===========================================================')
 				print(f"{color.okcyan}Which version do you prefer to solve captcha? Version [1] 1.0.4 or [2] 1.0.5 . Version 1.0.4 solve captcha not good")
@@ -92,23 +91,7 @@ while True:
 		else:
 			captchaver='vip'
 		
-		try:
-			print('')
-			print(f'{color.okcyan}Do you want to turn off auto reconnect BOT? {color.okgreen}')
-			print(f"{color.okcyan}If you turn off,the auto will run smoother,but it's will stop after disconnect without reconnect. Recommand turn on{color.okgreen}")
-			print(f'{color.okcyan}Automatically Pick Option [2:NO] In 10 Seconds.{color.okgreen}')
-			reconnect_choice = inputimeout(prompt=f'{color.okgreen}Enter Your Choice [1/2]: {color.okgreen}', timeout=10)
-		except TimeoutOccurred:
-			reconnect_choice = '2'  
-		if reconnect_choice=='2':
-			reconnect=True
-		elif reconnect_choice=='1':
-			reconnect=False
-		else:
-			print(f'{color.fail} !! [ERROR] !! {color.reset} Wrong input!')
-			sleep(1)
-			os.system('python "mainvip.py"')
-			#execl(executable, executable, *argv)
+	
 
   
 		if client.casinom.lower() == "yes":
@@ -134,24 +117,7 @@ while True:
 			sleep(1)
 			os.system('python "mainvip.py"')
 			#(executable, executable, *argv)
-		if client.casinom.lower() == 'no':
-			try:
-				print('')
-				print(f'{color.okcyan}Do you use OTHER selfbot auto with this auto at the same time ? [1]:Yes / [2]:No{color.okgreen}')
-				print(f'{color.okcyan}Automatically Pick Option [2]No In 10 Seconds.{color.reset}')
-				ocfsametimechoice = inputimeout(prompt=f'{color.okgreen}Enter Your Choice: {color.okcyan} ', timeout=10)
-			except TimeoutOccurred:
-				ocfsametimechoice = "2"
-			if ocfsametimechoice == "1" or ocfsametimechoice.lower() == "yes":
-				client.channelocf = input(f'{color.okcyan}Please input the id of channel you want to check captcha while playing OWO CF: {color.okgreen}')
-				sleep(1)
-				print(f'{color.yellow}The channel you want to check captcha while playing OWO CF is : {color.okgreen} {client.channelocf} {color.reset}')
-				print('')
-			if ocfsametimechoice != '2' and ocfsametimechoice.lower() != 'no' and ocfsametimechoice != '1' and ocfsametimechoice.lower() != 'yes':
-				print(f'{color.fail} !! [ERROR] !! {color.reset} Wrong input!')
-				sleep(1)
-				os.system('python "mainvip.py"')
-				#execl(executable, executable, *argv)
+		
 		# Thoát vòng chọn menu
 		break
 
@@ -254,7 +220,7 @@ def security(resp):
 	threadcaptchamusic = threading.Thread(name="captchamusic", target=captchamusic)
 	threadsolvedmusic = threading.Thread(name="solvedmusic", target=solvedmusic)
 	if issuechecker(resp) == "solved":	
-		if client.cfm.lower() == 'yes' or ocfsametimechoice.lower() == 'yes' or ocfsametimechoice.lower() == '1':
+		if client.casinom.lower() == 'yes' :
 			webhookPing(f"<@{client.webhookping}> [SUCCESS] I have solved the captcha succesfully in Channel: <#{client.channel}> or <#{client.channelocf}> . User: {client.username} ")  			
 		else:
 			webhookPing(f"<@{client.webhookping}> [SUCCESS] I have solved the captcha succesfully in Channel: <#{client.channel}> . User: {client.username} ") 
@@ -290,13 +256,13 @@ def security(resp):
 # Ping Webhook moded
 def webhookping():
 	if client.webhookping != 'None':
-		if client.cfm.lower() == 'yes' or ocfsametimechoice.lower() == 'yes' or ocfsametimechoice.lower() == '1':
+		if client.casinom.lower() == 'yes' :
 			webhookPing(f"<@{client.webhookping}> I Found A Captcha In Channel: <#{client.channel}> or <#{client.channelocf}> . User: {client.username} <@{client.userid}>")			
 		else:
 			webhookPing(f"<@{client.webhookping}> I Found A Captcha In Channel: <#{client.channel}>  . User: {client.username} <@{client.userid}>")
 
 	else:
-		if client.cfm.lower() == 'yes' or ocfsametimechoice.lower() == 'yes' or ocfsametimechoice.lower() == '1':
+		if client.casinom.lower() == 'yes' :
 			webhookPing(f"<@{client.userid}> <@{client.allowedid}> I Found A Captcha In Channel: <#{client.channel}>  or <#{client.channelocf}> . User: {client.username} <@{client.userid}>")
 		else:
 			webhookPing(f"<@{client.userid}> <@{client.allowedid}> I Found A Captcha In Channel: <#{client.channel}>. User: {client.username} <@{client.userid}>")
@@ -634,36 +600,17 @@ def issuechecker(resp):
 					ui.slowPrinting(f'{at()}{color.warning} !! [CAPTCHA] !! {color.reset} ACTION REQUİRED')
 					return "captcha"
 
-	def change_channel(guilds, guildIDs):
-		if client.change.lower() == "yes":
 
-			i = 0
-			length = len(guildIDs)
-			while length > i:
-				if client.channelspam in guilds[guildIDs[i]]['channels']:
-					guild = guildIDs[i]
-					i = length
-				else:
-					i += 1
-			guild = bot.gateway.session.guild(guild).channels
-			channelspam = guild.keys()
-			channelspam = random.choice(list(channelspam))
-			try:
-				if guild[channelspam]['type'] == "guild_text":
-					client.channel2.append(channelspam)
-					client.channel2.append(guild[channelspam]['name'])
-				else:
-					change_channel(guilds, guildIDs)
-			except RecursionError:
-				client.channel2.append(channelspam)
-				client.channel2.append(guild[channelspam]['name'])
-
-	try:
-		change_channel(bot.gateway.session.guilds, bot.gateway.session.guildIDs)
-	except KeyError:
-		pass
 					
-
+def changeChannel() -> str:
+		channel2 = []
+		guildspamID = bot.getChannel(client.channelspam).json()['guild_id']
+		channels = bot.gateway.session.guild(guildspamID).channels
+		for i in channels:
+			if channels[i]['type'] == "guild_text":
+				channel2.append(i)
+		channel2 = random.choice(channel2)
+		return channel2, channels[channel2]['name']
 
 
 @bot.gateway.command	
@@ -1313,15 +1260,12 @@ def thread105():
      
 			#Change Channel Mode
 			if client.change.lower() == "yes" and client.stopped != True:
-				if time() - change > random.randint(600, 1500):
-					change = time()
-					print(f"{at()}{color.okblue} [INFO] {color.reset} Changed Channel Spam To: {client.channel2[1]}")
-					# print(f"{at()}{color.okblue} [INFO] {color.reset} Changed Channel To: {channel2[1]}")
-					client.channelspam = client.channel2[0]
+				if time() - change > random.randint(600, 1500) and not client.stopped:
+					change=time()
+					channel = changeChannel()
+					client.channelspam = channel[0]
+					ui.slowPrinting(f"{at()}{color.okcyan} [INFO] {color.reset} Changed Channel Spaming To : {channel[1]}")
 			sleep(0.1)
-
-
- 
 
 
 @bot.gateway.command
@@ -1335,7 +1279,7 @@ def loopie(resp):
 		combo105.start()
 
 
-bot.gateway.run(auto_reconnect=reconnect)
+bot.gateway.run()
 
 
 @atexit.register
