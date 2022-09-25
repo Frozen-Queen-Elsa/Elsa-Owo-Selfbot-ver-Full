@@ -596,7 +596,7 @@ def issuechecker(resp):
 						webhookPing(f"<@{client.webhookping}> [WARNIG] CAPTCHA LINK. User: {client.username} <@{client.userid}>")						
 						threadcaptcha.start()			
 						client.stopped=True						
-						solvelink()			
+						return solvelink()			
 						return "captcha"
 					msgs = bot.getMessages(str(client.channel), num=10)
 					msgs = msgs.json()
