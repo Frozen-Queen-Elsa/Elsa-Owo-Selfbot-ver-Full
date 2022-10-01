@@ -1,4 +1,6 @@
 import base64
+import subprocess
+import sys
 import requests
 from signal import signal, SIGINT
 from colorama import init
@@ -42,7 +44,8 @@ if client.api.lower()!='none' or client.api.lower()!='no':
     api_key = os.getenv('APIKEY_2CAPTCHA', client.api)
     solver = TwoCaptcha(api_key, defaultTimeout=100, pollingInterval=5)
 failtime=0
-codefail=''      
+codefail=''     
+startloop=False 
 def signal_handler(sig: object, frame: object):
 	sleep(0.5)
 	ui.slowPrinting(f"\n{color.fail}[INFO] {color.reset}Detected Ctrl + C, Stopping...")
@@ -86,6 +89,7 @@ while True:
 			else:
 				print(f'{color.fail} !! [ERROR] !! {color.reset} Wrong input!')
 				sleep(1)
+				#subprocess.call(sys.executable + ' "' + os.path.realpath(__file__) + '"')
 				os.system('python "mainvip.py"')
 				#execl(executable, executable, *argv)
 		else:
@@ -115,6 +119,7 @@ while True:
 		if casino_choice != '2' and casino_choice.lower() != 'no' and casino_choice != '1' and casino_choice.lower() != 'yes':
 			print(f'{color.fail} !! [ERROR] !! {color.reset} Wrong input!')
 			sleep(1)
+			#subprocess.call(sys.executable + ' "' + os.path.realpath(__file__) + '"')
 			os.system('python "mainvip.py"')
 			#(executable, executable, *argv)
 		
@@ -132,6 +137,7 @@ while True:
 	else:
 		print(f'{color.fail} !! [ERROR] !! {color.reset} Wrong input!')
 		sleep(1)
+		#subprocess.call(sys.executable + ' "' + os.path.realpath(__file__) + '"')
 		os.system('python "mainvip.py"')
 		#execl(executable, executable, *argv)
 
@@ -193,7 +199,8 @@ def on_ready(resp):
 		print(f"{color.purple}----------------------------------{color.reset}")
 		print(f"{color.purple}Sound: {client.sound}{color.reset}")
 		print('═' * 25)
-
+		if startloop==False:
+			loopie()
 
 def webhookPing(message):
 	if client.webhook != 'None':
@@ -230,6 +237,7 @@ def security(resp):
 		#threadsolvedmusic.start()
 		sleep(3)
 		print(f'{color.okcyan}[INFO] {color.reset}Captcha Solved. Started To Run Again')
+		#subprocess.call(sys.executable + ' "' + os.path.realpath(__file__) + '"')
 		os.system('python "mainvip.py"')
 		#execl(executable, executable, *argv)
 	if issuechecker(resp) == "captcha":
@@ -566,7 +574,8 @@ def issuechecker(resp):
 				return "solved"
 			else:	
 				return "captcha"
-			
+		else:
+			return "captcha"				
 
 
 	if resp.event.message:
@@ -594,10 +603,10 @@ def issuechecker(resp):
 					elif msgs[0]['author']['id'] == client.OwOID and 'link' in msgs[0]['content'].lower() and not client.stopped:
 						client.stopped =True
 						webhookPing(f"<@{client.webhookping}> [WARNIG] CAPTCHA LINK. User: {client.username} <@{client.userid}>")						
-						threadcaptcha.start()			
+						#threadcaptcha.start()			
 						client.stopped=True						
 						return solvelink()			
-						return "captcha"
+					
 					msgs = bot.getMessages(str(client.channel), num=10)
 					msgs = msgs.json()
 					for i in range(len(msgs)):
@@ -656,11 +665,109 @@ def checkgem(resp):
 			if m['channel_id'] == client.channel and client.stopped != True:
 				if m['author']['id'] == client.OwOID:
 					if client.username in m['content'] and "**🌱" in m['content']:
-						print(f'{at()}{color.warning} !! [CHECK HUNT] !! {color.reset} ')
+						print(f'{at()}{color.warning} !! [CHECK GEM HUNT] !! {color.reset} ')
 					if client.username in m['content'] and  "and caught" in m['content'] and client.checknogem == False:
 						print(f'{at()}{color.warning} !! [CHECK GEM] checknogem = {client.checknogem}!! {color.reset} ')
 						# Gems.useGems()
 						useGem()
+
+
+def substring_after(s, substring):
+    return s.partition(substring)[2]           
+         
+def substring_before(s,substring):
+    return s.partition(substring)[0]
+
+listfabled=[
+	'fabled',
+	'dboar',
+	'deagle',
+	'dfrog',
+	'dgorilla',
+	'dwolf'
+]
+listhidden=[
+	'hidden',
+	'hkoala',
+	'hlizzard',
+	'hsnake',
+	'hsquid',
+	'hmonkey'	
+]
+listbotrank=[
+	'botrank',
+	'dinobot',
+	'giraffbot',
+	'hedgebot',
+	'lobbot',
+	'slothbot'	
+]
+listdistored=[
+	'distorted',
+	'glitchparrot',
+	'glitchotter',
+	'glitchraccoon',
+	'glitchflamingo',
+	'glitchzebra'	
+]
+
+
+# Check Hunt
+@bot.gateway.command
+def checkhunt(resp):
+	if client.stopped != True:
+		if resp.event.message:
+			m = resp.parsed.auto()
+			
+			if m['channel_id'] == client.channel and client.stopped != True:
+				if m['author']['id'] == client.OwOID:
+					if client.username in m['content'] and "**🌱" in m['content']:						
+						guildhuntid = bot.getChannel(m['channel_id']).json()['guild_id']
+						channels = bot.gateway.session.guild(guildhuntid).channels
+						guildname=bot.gateway.session.guild(guildhuntid).name
+						for i in channels:
+							if channels[i]['type'] == "guild_text" and channels[i]['id']==m['channel_id']:
+								channel4=channels[i]
+						channelname=channel4['name']
+						if "empowered" in m['content']:
+							pet1=substring_after(m['content'],":blank: |")
+							pethunt=substring_before(pet1, ':blank: |')
+						if "caught" in m['content']:
+							pet1=substring_after(m['content'],"caught ")
+							pethunt=substring_before(pet1, '!')
+
+						for i in range(len(listhidden)):
+							if listhidden[i].lower() in pethunt.lower():          
+								webhookPing(f"<@{client.webhookping}> [INFO] I have found Hidden Pet at  . User: {client.username} <@{client.userid}> ") 
+								webhookPing(f"https://discord.com/channels/{guildhuntid}/{m['channel_id']}/{m['id']}")
+								print(f"You found Hidden Pet by hunting at channel {channelname} in server {guildname} with message id is {m['id']}")
+								break
+						for i in range(len(listfabled)):
+							if listfabled[i].lower() in pethunt.lower():   
+								webhookPing(f"<@{client.webhookping}> [INFO] I have found Fabled Pet at  . User: {client.username} <@{client.userid}> ") 
+								webhookPing(f"https://discord.com/channels/{guildhuntid}/{m['channel_id']}/{m['id']}")			
+								print(f"You found Fabled Pet by hunting at channel {channelname} in server {guildname} with message id is {m['id']}")
+								break
+						for i in range(len(listbotrank)):
+							if listbotrank[i].lower() in pethunt.lower():  
+								webhookPing(f"<@{client.webhookping}> [INFO] I have found Botrank Pet at  . User: {client.username} <@{client.userid}> ") 
+								webhookPing(f"https://discord.com/channels/{guildhuntid}/{m['channel_id']}/{m['id']}")
+								print(f"You found Botrank Pet by hunting at channel {channelname} in server {guildname} with message id is {m['id']}")      
+								break
+						if "cpatreon" in pethunt:
+							webhookPing(f"<@{client.webhookping}> [INFO] I have found CPatreon Pet at  . User: {client.username} <@{client.userid}> ") 
+							webhookPing(f"https://discord.com/channels/{guildhuntid}/{m['channel_id']}/{m['id']}")
+							print(f"You found CPatreon Pet by hunting at channel {channelname} in server {guildname} with message id is {m['id']}")   
+						for i in range(len(listdistored)):
+							if listdistored[i].lower() in pethunt.lower(): 
+								webhookPing(f"<@{client.webhookping}> [INFO] I have found Distorted Pet at  . User: {client.username} <@{client.userid}> ") 
+								webhookPing(f"https://discord.com/channels/{guildhuntid}/{m['channel_id']}/{m['id']}")
+								print(f"You found Distorted Pet by hunting at channel {channelname} in server {guildname} with message id is {m['id']}")      
+								break
+						if "special" in pethunt:
+							webhookPing(f"<@{client.webhookping}> [INFO] I have found Special Pet at  . User: {client.username} <@{client.userid}> ") 
+							webhookPing(f"https://discord.com/channels/{guildhuntid}/{m['channel_id']}/{m['id']}")
+							print(f"You found Special Pet by hunting at channel {channelname} in server {guildname} with message id is {m['id']}")   
 
 
 def useGem():
@@ -931,6 +1038,7 @@ def othercommands(resp):
 				bot.sendMessage(str(m['channel_id']), "Restarting...")
 				print(f"{color.okcyan} [INFO] Restarting...  {color.reset}")
 				sleep(1)
+				#subprocess.call(sys.executable + ' "' + os.path.realpath(__file__) + '"')
 				os.system('python "mainvip.py"')
 				#execl(executable, executable, *argv)
 			if m['content'].startswith("f{prefix}exit"):
@@ -1259,6 +1367,7 @@ def thread105():
 					main = time()
 					print(f"{at()}{color.okblue} [INFO]{color.reset} Sleeping")
 					sleep(random.randint(250, 450))
+					#subprocess.call(sys.executable + ' "' + os.path.realpath(__file__) + '"')
 					#os.system('python "mainvip.py"')
      
 			#Spam Mode
@@ -1288,15 +1397,14 @@ def thread105():
 			sleep(0.1)
 
 
-@bot.gateway.command
-def loopie(resp):
-	if resp.event.ready:
 
-		combo105 = threading.Thread(name="thread105", target=thread105)
-		combocasino = threading.Thread(name="threadcasino", target=threadcasino)
-		if client.casinom.lower() == 'yes':
-			combocasino.start()
-		combo105.start()
+def loopie():	
+	startloop=True
+	combo105 = threading.Thread(name="thread105", target=thread105)
+	combocasino = threading.Thread(name="threadcasino", target=threadcasino)
+	if client.casinom.lower() == 'yes':
+		combocasino.start()
+	combo105.start()
 
 
 bot.gateway.run()
@@ -1319,6 +1427,7 @@ def atexit():
 	except TimeoutOccurred:
 		choice = "3"
 	if choice == "1":
+		#subprocess.call(sys.executable + ' "' + os.path.realpath(__file__) + '"')
 		os.system('python "mainvip.py"')
 		#execl(executable, executable, *argv)
 	elif choice == "2":
