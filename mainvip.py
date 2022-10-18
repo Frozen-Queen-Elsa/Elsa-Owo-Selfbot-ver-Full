@@ -45,7 +45,7 @@ if client.api.lower()!='none' or client.api.lower()!='no':
     solver = TwoCaptcha(api_key, defaultTimeout=100, pollingInterval=5)
 failtime=0
 codefail=''     
-startloop=False 
+
 def signal_handler(sig: object, frame: object):
 	sleep(0.5)
 	ui.slowPrinting(f"\n{color.fail}[INFO] {color.reset}Detected Ctrl + C, Stopping...")
@@ -199,8 +199,8 @@ def on_ready(resp):
 		print(f"{color.purple}----------------------------------{color.reset}")
 		print(f"{color.purple}Sound: {client.sound}{color.reset}")
 		print('═' * 25)
-		if startloop==False:
-			loopie()
+		loopie()
+			
 
 def webhookPing(message):
 	if client.webhook != 'None':
@@ -1399,7 +1399,7 @@ def thread105():
 
 
 def loopie():	
-	startloop=True
+	
 	combo105 = threading.Thread(name="thread105", target=thread105)
 	combocasino = threading.Thread(name="threadcasino", target=threadcasino)
 	if client.casinom.lower() == 'yes':
