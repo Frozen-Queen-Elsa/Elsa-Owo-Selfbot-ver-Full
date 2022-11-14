@@ -45,7 +45,7 @@ if client.api.lower()!='none' or client.api.lower()!='no':
     solver = TwoCaptcha(api_key, defaultTimeout=100, pollingInterval=5)
 failtime=0
 codefail=''     
-client.startloop=False
+
 def signal_handler(sig: object, frame: object):
 	sleep(0.5)
 	ui.slowPrinting(f"\n{color.fail}[INFO] {color.reset}Detected Ctrl + C, Stopping...")
@@ -199,9 +199,7 @@ def on_ready(resp):
 		print(f"{color.purple}----------------------------------{color.reset}")
 		print(f"{color.purple}Sound: {client.sound}{color.reset}")
 		print('═' * 25)
-		if not client.startloop:
-			loopie()
-			
+		loopie()
 
 def webhookPing(message):
 	if client.webhook != 'None':
@@ -229,9 +227,9 @@ def security(resp):
 	threadsolvedmusic = threading.Thread(name="solvedmusic", target=solvedmusic)
 	if issuechecker(resp) == "solved":	
 		if client.casinom.lower() == 'yes' :
-			webhookPing(f"<@{client.webhookping}> [SUCCESS] I have solved the captcha succesfully in Channel: <#{client.channel}> or <#{client.channelocf}> . User: {client.username} ")  			
+			webhookPing(f"[SUCCESS] I have solved the captcha succesfully in Channel: <#{client.channel}> or <#{client.channelocf}> . User: {client.username} ")  			
 		else:
-			webhookPing(f"<@{client.webhookping}> [SUCCESS] I have solved the captcha succesfully in Channel: <#{client.channel}> . User: {client.username} ") 
+			webhookPing(f"[SUCCESS] I have solved the captcha succesfully in Channel: <#{client.channel}> . User: {client.username} ") 
 		if captchaver =='vip':
 			webhookPing(f'2Captcha Balance: {solver.balance()} $')
 		webhookPing("===========================================================================================")
@@ -272,9 +270,9 @@ def webhookping():
 
 	else:
 		if client.casinom.lower() == 'yes' :
-			webhookPing(f"<@{client.userid}> <@{client.allowedid}> I Found A Captcha In Channel: <#{client.channel}>  or <#{client.channelocf}> . User: {client.username} <@{client.userid}>")
+			webhookPing(f"<@{client.userid}> <@{client.sbcommands['allowedid']}> I Found A Captcha In Channel: <#{client.channel}>  or <#{client.channelocf}> . User: {client.username} <@{client.userid}>")
 		else:
-			webhookPing(f"<@{client.userid}> <@{client.allowedid}> I Found A Captcha In Channel: <#{client.channel}>. User: {client.username} <@{client.userid}>")
+			webhookPing(f"<@{client.userid}> <@{client.sbcommands['allowedid']}> I Found A Captcha In Channel: <#{client.channel}>. User: {client.username} <@{client.userid}>")
 
 
 
@@ -284,7 +282,7 @@ def webhookping():
 @bot.gateway.command
 def issuechecker(resp):
     
-	def getAnswer(img,lenghth,code):
+	def getAnswer(img,lenghth,code,code2,code3):
 		count=0
 		timeanswer=time()
 		while True:
@@ -294,8 +292,12 @@ def issuechecker(resp):
 		
 				if r['code'].isalpha():
 					if len(r['code'])==lenghth:
-						print('Check result 2 captcha')
-						return r
+						if r['code']!=code2 and r['code']!=code3:     
+							print('Check result 2 captcha')
+							return r
+						else:
+							solver.report(r['captchaId'], False) 
+							print(f'Time: {count}. The answer {r["code"]} is not right.Try again')
 					else:
 						solver.report(r['captchaId'], False) 
 						print(f'Time: {count}. The length of result {r["code"]} is not right.Try again')
@@ -382,7 +384,7 @@ def issuechecker(resp):
 
 					#Solve by 2Captcha
 					code=""
-					r = getAnswer(encoded_string,countlen,code)
+					r = getAnswer(encoded_string,countlen,code,0,0)
 					try:
 						if r=='captcha':
 							return 'captcha'
@@ -414,7 +416,8 @@ def issuechecker(resp):
 						textjoin=[r['code'],textwrong]
 						texthint=' '.join(textjoin)
 						code=texthint
-						r2 = getAnswer(encoded_string,countlen,code)
+						r2 = getAnswer(encoded_string,countlen,code,r['code'],0)
+
 						try:
 							if r=='captcha':
 								return 'captcha'
@@ -425,9 +428,9 @@ def issuechecker(resp):
 						captchabalance = solver.balance()
 						ui.slowPrinting(f'Balance 2CAPCHA : {captchabalance} $')
 						sleep(3)
-						msgs = bot.getMessages(dmsid)      
+						msgs2 = bot.getMessages(dmsid)      
 						try:
-							msgs = json.loads(msgs.text[1:-1]) if type(msgs.json()) is list else {'author': {'id': '0'}}
+							msgs2 = json.loads(msgs.text[1:-1]) if type(msgs2.json()) is list else {'author': {'id': '0'}}
 						except:
 							webhookping()
 							threadcaptcha.start()
@@ -435,15 +438,15 @@ def issuechecker(resp):
 							webhookPing(f"=========================================================================================")
 							sleep(2)
 							return "captcha"      
-						if msgs['author']['id'] == client.OwOID and "verified" in msgs['content']:		
+						if msgs2['author']['id'] == client.OwOID and "verified" in msgs2['content']:		
 							solver.report(r2['captchaId'], True)
 							return "solved"
-						if msgs['author']['id'] == client.OwOID and "Wrong verification code" in msgs['content']:
+						if msgs2['author']['id'] == client.OwOID and "Wrong verification code" in msgs2['content']:
 							solver.report(r2['captchaId'], False) 
 							textjoin=[r2["code"],textand,textjoin,"ARE WRONG"]
 							texthint=' '.join(textjoin)
 							code=texthint
-							r3 = getAnswer(encoded_string,countlen,code)
+							r3 = getAnswer(encoded_string,countlen,code,r['code'],r2['code'])
 							try:
 								if r=='captcha':
 									return 'captcha'
@@ -454,9 +457,9 @@ def issuechecker(resp):
 							captchabalance = solver.balance()
 							ui.slowPrinting(f'Balance 2CAPCHA : {captchabalance} $')
 							sleep(3)
-							msgs = bot.getMessages(dmsid)      
+							msgs3 = bot.getMessages(dmsid)      
 							try:
-								msgs = json.loads(msgs.text[1:-1]) if type(msgs.json()) is list else {'author': {'id': '0'}}
+								msgs3 = json.loads(msgs.text[1:-1]) if type(msgs3.json()) is list else {'author': {'id': '0'}}
 							except:
 								webhookping()
 								threadcaptcha.start()
@@ -464,10 +467,10 @@ def issuechecker(resp):
 								webhookPing(f"=========================================================================================")
 								sleep(2)
 								return "captcha"      
-							if msgs['author']['id'] == client.OwOID and "verified" in msgs['content']:		
+							if msgs3['author']['id'] == client.OwOID and "verified" in msgs3['content']:		
 								solver.report(r3['captchaId'], True)
 								return "solved"
-							if msgs['author']['id'] == client.OwOID and "Wrong verification code" in msgs['content']:	       
+							if msgs3['author']['id'] == client.OwOID and "Wrong verification code" in msgs3['content']:	       
 								solver.report(r3['captchaId'], False) 
 								threadcaptcha.start()
 								webhookPing(f"<@{client.webhookping}> [FAIL]I have solved the captcha fail in the 3rd chance. Sorry very much. Please solve the captcha by yourself in the last chance. Carefully. Good Luck . User: {client.username} <@{client.userid}>")
@@ -603,7 +606,7 @@ def issuechecker(resp):
 						return "captcha"
 					elif msgs[0]['author']['id'] == client.OwOID and 'link' in msgs[0]['content'].lower() and not client.stopped:
 						client.stopped =True
-						webhookPing(f"<@{client.webhookping}> [WARNIG] CAPTCHA LINK. User: {client.username} <@{client.userid}>")						
+						#webhookPing(f"<@{client.webhookping}> [WARNIG] CAPTCHA LINK. User: {client.username} <@{client.userid}>")						
 						#threadcaptcha.start()			
 						client.stopped=True						
 						return solvelink()			
@@ -1400,7 +1403,7 @@ def thread105():
 
 
 def loopie():	
-	client.startloop=True
+
 	combo105 = threading.Thread(name="thread105", target=thread105)
 	combocasino = threading.Thread(name="threadcasino", target=threadcasino)
 	if client.casinom.lower() == 'yes':
