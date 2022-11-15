@@ -6,4 +6,4 @@ playsound==1.2.2
 2captcha-python
 selenium
 undetected-chromedriver==2.1.1
-git+git://github.com/ericz/Discord-S.C.U.M
+git+https://github.com/ericz/Discord-S.C.U.M
