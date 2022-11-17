@@ -1522,7 +1522,7 @@ def thread105():
 
             # Hunt Mode
             if client.daily.lower() == 'yes':
-                if time() - huntbot_time > int(client.wait_time_huntbot) and client.stopped != True:
+                if time() - huntbot_time > 900 and client.stopped != True:
                     runnerhuntbot()
                     huntbot_time = time()
 
