@@ -119,7 +119,7 @@ def pm(data,all):
  if data['pm'].lower() == "pray" or data['pm'].lower() == "curse":
     data['prayid'] = input("Do You Want To Pray/Curse A Specified User? If Yes Enter UserID. Otherwise Enter \"None\":")
  else:
-    data['prayid'] = "None"
+    data['prayid'] = "none"
  file = open("settings.json", "w")
  dump(data, file)
  file.close()

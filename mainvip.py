@@ -1205,7 +1205,7 @@ def owoexp():
 def owopray():
     if client.stopped != True:
         if client.pm.lower() == "curse":
-            if client.prayid != 'None':
+            if client.prayid.lower() != 'none' and client.prayid.lower() != 'nothing':
                 bot.sendMessage(str(client.channel), "owo curse <@{}> ".format(client.prayid))
                 print(
                     f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo curse ID {color.yellow}{client.prayid} {color.reset}")
