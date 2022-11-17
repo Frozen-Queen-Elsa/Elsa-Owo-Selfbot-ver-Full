@@ -45,7 +45,9 @@ def main():
 		casinom(data, True)
 		sound(data,True)
 		runner(data,True)
+		huntbot(data,True)
 		api(data,True)
+
 
 	elif choice == "2":
 		t(data, False)
@@ -62,22 +64,24 @@ def main():
 	elif choice == "8":
 		sm(data, False)
 	elif choice == "9":
-		webhook(data, False)
+		huntbot(data, False)
 	elif choice == "10":
-		oc(data, False)
+		webhook(data, False)
 	elif choice == "11":
-		daily(data, False)
+		oc(data, False)
 	elif choice == "12":
-		stop(data, False)
+		daily(data, False)
 	elif choice == "13":
-		sell(data, False)
+		stop(data, False)
 	elif choice == "14":
-		solve(data, False)
+		sell(data, False)
 	elif choice == "15":
-		casinom(data, False)
+		solve(data, False)
 	elif choice == "16":
-		sound(data, False)
+		casinom(data, False)
 	elif choice == "17":
+		sound(data, False)
+	elif choice == "18":
 		api(data, False)    
 	else:
 		ui.slowPrinting(f"{color.fail}[INFO] {color.reset}Invalid Choice")
@@ -154,7 +158,7 @@ def sm(data,all):
   main()
 def webhook(data,all):
  data['webhook'] = input("Toggle Discord Webhook, Enter Webhook Link If You Want It To Ping You If OwO Asked Captcha. Otherwise Enter \"None\": ")
- if data['webhook'] != "None":
+ if data['webhook'].lowwer() != "none":
   data['webhookping'] = input("Do You Want To Ping A Specified User When OwO Asked Captcha? If Yes Enter User ID. Otherwise Enter \"None\": ")
  file = open("settings.json", "w")
  dump(data, file)
@@ -162,6 +166,18 @@ def webhook(data,all):
  ui.slowPrinting(f"{color.okcyan}[INFO] {color.reset}Successfully Saved!")
  if not all:
   main()
+
+def huntbot(data,all):
+ data['rhuntbot'] = input("Toggle Automatically Send Huntbot/Autohunt (YES/NO): ")
+ if data['rhuntbot'].lower() == "yes":
+  data['sacrifice'] = input("Toggle Automatically Sacrifice all pet after huntbot (YES/NO): ")
+ file = open("settings.json", "w")
+ dump(data, file)
+ file.close()
+ ui.slowPrinting(f"{color.okcyan}[INFO] {color.reset}Successfully Saved!")
+ if not all:
+  main()
+
 def oc(data,all):
  data['prefix'] = input("Toggle Selfbot Commands, You Can Control Your Selfbot Using Commands (YES/NO): ")
  if data['prefix'].lower() == "yes":

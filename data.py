@@ -24,6 +24,7 @@ class data:
 		self.stopped = False
 		self.version = int(''.join(map(str, Version)))
 		self.wait_time_daily = 60
+		self.wait_time_huntbot = 60
 		self.channel2 = []
 
 		#OCF
@@ -66,6 +67,8 @@ class data:
 			self.rbattle = data['rbattle']
 			self.rowo = data['rowo']
 			self.rbuyring = data['rbuyring']
+			self.rhuntbot = data['rhuntbot']
+			self.sacrifice = data['sacrifice']
 			#OCF
 			self.casinom =data['casinom']
 			self.cfm =data['cfm']
