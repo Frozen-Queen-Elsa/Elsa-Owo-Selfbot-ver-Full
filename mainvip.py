@@ -614,7 +614,7 @@ def issuechecker(resp):
 					msgs = bot.getMessages(str(client.channel), num=10)
 					msgs = msgs.json()
 					for i in range(len(msgs)):
-						if client.username in m['content'] and msgs[i]['author']['id'] == client.OwOID and 'solving the captcha' in msgs[i]['content'].lower() and not client.stopped:
+						if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'solving the captcha' in msgs[i]['content'].lower() and not client.stopped:
 							ui.slowPrinting(f'{at()}{color.warning} !! [CAPTCHA] !! {color.reset} ACTION REQUİRED')
 							if client.solve.lower() != "no" and not client.stopped:
 								return solve(msgs[i]['attachments'][0]['url'], msgs[0]['content'])
