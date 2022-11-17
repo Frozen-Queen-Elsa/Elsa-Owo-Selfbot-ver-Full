@@ -1278,10 +1278,7 @@ def runnerhuntbot():
                 i = length
             else:
                 i += 1
-        if not huntbot_string:
-            sleep(5)
-            client.totalcmd -= 1
-            runnerhuntbot()
+     
         else:
             if "I WILL BE BACK IN" in huntbot_string:
                 huntbot_string = findall('[0-9]+', huntbot_string)
