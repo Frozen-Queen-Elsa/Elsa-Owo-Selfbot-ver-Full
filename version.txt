@@ -1,5 +1,7 @@
-Current version: 1.5.2
+Current version: 1.5.3
 
+-Auto huntbot
 -Upgraded Automatically Solve Captcha
 -The Console Won't Close Automatically After Stop Anymore
 -Fix Some Issues
+
