@@ -1320,7 +1320,7 @@ def runnerhuntbot():
     if client.rhuntbot.lower() == "yes" and client.stopped != True:
         bot.typingAction(str(client.channel))
         sleep(3)
-        bot.sendMessage(str(client.channel), "owo hb1")
+        bot.sendMessage(str(client.channel), "owo hb 1")
         print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 1")
         client.totalcmd += 1
         sleep(3)
