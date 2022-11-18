@@ -1370,7 +1370,7 @@ def runnerhuntbot():
                 bot.sendMessage(str(client.channel), "owo hb 1")
                 print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 1")
 
-@bot.gateway.command()
+@bot.gateway.command
 def checkhuntbot(resp):
     def getPassword(img, lenghth, code):
         count = 0
