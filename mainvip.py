@@ -1353,8 +1353,7 @@ def runnerhuntbot():
                 wait_hour=int(hour_huntbot_string)
                 wait_minute=int(minute_huntbot_string)
                 client.wait_time_huntbot=wait_hour*3600+wait_minute*60
-                huntbot_string = findall('[0-9]+', huntbot_string)
-                client.wait_time_huntbot = str(int(huntbot_string[0]) * 3600 + int(huntbot_string[1]) * 60)
+
 
                 print(f"{at()}{color.okblue} [INFO] {color.reset} Next Huntbot: {wait_hour}H {wait_minute}M")
 
