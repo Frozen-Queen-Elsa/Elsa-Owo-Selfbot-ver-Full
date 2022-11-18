@@ -564,6 +564,114 @@ def issuechecker(resp):
         else:
             return "captcha"
 
+    def getPassword(img, lenghth, code):
+        count = 0
+        timeanswer = time()
+        while True:
+            count += 1
+            r = solver.normal(img, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang='en')
+
+            if r['code'].isalpha():
+                if len(r['code']) == lenghth:
+                    if r['code'] != code:
+                        print('Check result 2captcha')
+                        return r
+                    else:
+                        solver.report(r['captchaId'], False)
+                        print(f'Time: {count}. The result {r["code"]} is not right.Try again')
+                else:
+                    solver.report(r['captchaId'], False)
+                    print(f'Time: {count}. The length of result {r["code"]} is not right.Try again')
+            else:
+                solver.report(r['captchaId'], False)
+                print(f'Time: {count}. The result {r["code"]} contants number.Try again')
+
+    def solvepassword(image_url, msgs):
+        if captchaver == '105':
+            user = bot.gateway.session.user
+            from api import CAPI
+            api = CAPI(user['id'])
+            encoded_string = b64encode(get(image_url).content).decode('utf-8')
+            r = api.solve(Json={'data': encoded_string, 'len': msgs[msgs.find("letter word") - 2]})
+            if r:
+                ui.slowPrinting(f"{color.okcyan}[INFO] {color.reset}Solved Password huntbot [Code: {r['code']}]")
+                bot.typingAction(str(client.channel))
+                sleep(3)
+                bot.sendMessage(str(client.channel), f"owo hb 30000 {r['code']}")
+                print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 30000 {r['code']}")
+                msgs = bot.getMessages(str(client.channel), num=10)
+                msgs = msgs.json()
+                for i in range(len(msgs)):
+                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'I WILL BE BACK IN' in msgs[i]['content'] and not client.stopped:
+                        api.report(Json={'captchaId': r['captchaId'], 'correct': 'True'})
+                        print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [INFO] {color.reset} Password huntbot is right")
+                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'WRONG PASSWORD' in msgs[i]['content'] and not client.stopped:
+                        api.report(Json={'captchaId': r['captchaId'], 'correct': 'False'})
+                        print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} Password huntbot is wrong")
+                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'have enough' in msgs[i]['content'] and not client.stopped:
+                        print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} You dont have enough Cowocy")
+        if captchaver == 'vip':
+            encoded_string = b64encode(get(image_url).content).decode('utf-8')
+            countlen = int(msgs[msgs.find("letter word") - 2])
+            captchabalance = solver.balance()
+            if captchabalance == 0:
+                print(f'Balance 2CAPCHA : {captchabalance} $ Out of money')
+                webhookPing(f"<@{client.webhookping}> [FAIL]Out of money . User: {client.username} <@{client.userid}>")
+                webhookPing(f"=========================================================================================")
+                print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} You dont have enough Money in 2Captcha Balance")
+                # Solve by 2Captcha
+                r = getPassword(encoded_string, countlen, 0)
+
+                captchabalance = solver.balance()
+                print(f'Balance 2CAPCHA : {captchabalance} $')
+                print(f"{color.okcyan}[INFO] {color.reset}Solving Password at 1st chance: [Code: {r['code']}]")
+
+                bot.typingAction(str(client.channel))
+                sleep(3)
+                bot.sendMessage(str(client.channel), f"owo hb 30000 {r['code']}")
+                print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 30000 {r['code']}")
+
+                msgs = bot.getMessages(str(client.channel), num=10)
+                msgs = msgs.json()
+                for i in range(len(msgs)):
+                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'I WILL BE BACK IN' in msgs[i]['content'] and not client.stopped:
+                        solver.report(r['captchaId'], True)
+                        print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [INFO] {color.reset} Password huntbot is right")
+
+                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'WRONG PASSWORD' in msgs[i]['content'] and not client.stopped:
+                        solver.report(r['captchaId'], False)
+                        print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} Password huntbot is wrong.Try again")
+                        r2 = getPassword(encoded_string, countlen, r['code'])
+                        captchabalance = solver.balance()
+                        print(f'Balance 2CAPCHA : {captchabalance} $')
+                        print(f"{color.okcyan}[INFO] {color.reset}Solving Password at 2nd chance: [Code: {r2['code']}]")
+
+                        bot.typingAction(str(client.channel))
+                        sleep(3)
+                        bot.sendMessage(str(client.channel), f"owo hb 30000 {r['code']}")
+                        print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 30000 {r['code']}")
+
+                        msgs = bot.getMessages(str(client.channel), num=10)
+                        msgs = msgs.json()
+                        for i in range(len(msgs)):
+                            if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'I WILL BE BACK IN' in msgs[i]['content'] and not client.stopped:
+                                solver.report(r['captchaId'], True)
+                                print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [INFO] {color.reset} Password huntbot is right")
+
+                            if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'WRONG PASSWORD' in msgs[i]['content'] and not client.stopped:
+                                solver.report(r['captchaId'], True)
+                                print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [INFO] {color.reset} Password huntbot is Wrong")
+
+                            if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'have enough' in msgs[i]['content'] and not client.stopped:
+                                print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} You dont have enough Cowocy")
+
+                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'have enough' in msgs[i]['content'] and not client.stopped:
+                        print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} You dont have enough 30k Cowocy")
+
+
+
+
+
     if resp.event.message:
         threadcaptcha = threading.Thread(name="captchamusic", target=captchamusic)
         m = resp.parsed.auto()
@@ -614,6 +722,11 @@ def issuechecker(resp):
                     client.stopped = True
                     ui.slowPrinting(f'{at()}{color.warning} !! [CAPTCHA] !! {color.reset} ACTION REQUİRED')
                     return "captcha"
+
+        if m['channel_id'] == client.channel and client.username in m['content'] and "here is your password" in m['content'] and not client.stopped:
+            print(f'{at()}{color.warning} !! [HUNTBOT] !! {color.reset} Huntbot Password REQUİRED')
+            print(f"{at()}{color.okblue} [INFO] {color.reset} Waiting solving Password")
+            return solvepassword(m['attachments'][0]['url'], m['content'])
 
 
 def changeChannel() -> str:
@@ -1323,164 +1436,69 @@ def substring_before(s, substring):
     return s.partition(substring)[0]
 
 def runnerhuntbot():
-    if client.rhuntbot.lower() == "yes" and client.stopped != True:
-        bot.typingAction(str(client.channel))
-        sleep(3)
-        bot.sendMessage(str(client.channel), "owo hb 1")
-        print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 1")
-        client.totalcmd += 1
-        sleep(3)
-        msgs = bot.getMessages(str(client.channel), num=5)
-        msgs = msgs.json()
-        huntbot_string = ""
-        length = len(msgs)
-        i = 0
-        while i < length:
-            if msgs[i]['author']['id'] == client.OwOID and msgs[i]['content'] != "" and "I WILL BE BACK IN" in msgs[i]['content']:
-                huntbot_string = msgs[i]['content']
-                i = length
-            else:
-                i += 1
-     
-        else:
-            if "I WILL BE BACK IN" in huntbot_string:
-                huntbot_string=substring_after(huntbot_string,"I WILL BE BACK IN ")
-                huntbot_string=substring_before(huntbot_string,"DONE")
-                huntbot_string=substring_before(huntbot_string,":blank:")
-                hour_huntbot_string=substring_before(huntbot_string,"H")
-                minute_huntbot_string=substring_before(substring_after(huntbot_string,"H"),"M")
-                minute_huntbot_string=minute_huntbot_string.lstrip()
-                wait_hour=int(hour_huntbot_string)
-                wait_minute=int(minute_huntbot_string)
-                client.wait_time_huntbot=wait_hour*3600+wait_minute*60
+	if client.rhuntbot.lower() == "yes" and client.stopped != True:
+		bot.typingAction(str(client.channel))
+		sleep(3)
+		bot.sendMessage(str(client.channel), "owo hb 1")
+		print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 1")
+		client.totalcmd += 1
+		sleep(3)
+		msgs = bot.getMessages(str(client.channel), num=5)
+		msgs = msgs.json()
+		huntbot_string = ""
+		length = len(msgs)
+		i = 0
+		while i < length:
+			if msgs[i]['author']['id'] == client.OwOID and msgs[i]['content'] != "" and not client.stopped :
+				if "I WILL BE BACK IN" in msgs[i]['content'] or " Password will reset in" in msgs[i]['content'] or "I AM BACK WITH" in msgs[i]['content']:
+					huntbot_string = msgs[i]['content']
+					i = length
+				else:
+					i += 1
+			else:
+				i += 1
+
+		else:
+			if "I WILL BE BACK IN" in huntbot_string:
+				huntbot_string = substring_after(huntbot_string, "I WILL BE BACK IN ")
+				huntbot_string = substring_before(huntbot_string, "DONE")
+				huntbot_string = substring_before(huntbot_string, ":blank:")
+				hour_huntbot_string = substring_before(huntbot_string, "H")
+				minute_huntbot_string = substring_before(substring_after(huntbot_string, "H"), "M")
+				minute_huntbot_string = minute_huntbot_string.lstrip()
+				wait_hour = int(hour_huntbot_string)
+				wait_minute = int(minute_huntbot_string)
+				client.wait_time_huntbot = wait_hour * 3600 + wait_minute * 60
+
+				print(f'{client.wait_time_huntbot}')
+				print(f"{at()}{color.okblue} [INFO] {color.reset} Next Huntbot: {wait_hour}H {wait_minute}M")
+
+			if " Password will reset in" in huntbot_string:
+				huntbot_string = substring_after(huntbot_string, "Password will reset in ")
+				huntbot_string = substring_before(huntbot_string, " minutes")
 
 
-                print(f"{at()}{color.okblue} [INFO] {color.reset} Next Huntbot: {wait_hour}H {wait_minute}M")
+				minute_huntbot_string = huntbot_string.lstrip()
 
-            if "I AM BACK WITH" in huntbot_string:
-                print(f"{at()}{color.okblue} [INFO] {color.reset} Claimed Huntbot")
-                if client.sacrifice.lower() == "yes" and client.stopped != True:
-                    bot.typingAction(str(client.channel))
-                    sleep(3)
-                    bot.sendMessage(str(client.channel), "owo sc all")
-                    print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo sc all")
-                bot.typingAction(str(client.channel))
-                sleep(3)
-                bot.sendMessage(str(client.channel), "owo hb 1")
-                print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 1")
+				wait_minute = int(minute_huntbot_string)
+				client.wait_time_huntbot = wait_minute * 60
 
-@bot.gateway.command
-def checkhuntbot(resp):
-    def getPassword(img, lenghth, code):
-        count = 0
-        timeanswer = time()
-        while True:
-            count += 1
-            r = solver.normal(img, numeric=2, minLen=lenghth, maxLen=lenghth, phrase=0, caseSensitive=0, calc=0, lang='en')
+				print(f'{client.wait_time_huntbot}')
+				print(f"{at()}{color.okblue} [INFO] {color.reset} Next Huntbot:{wait_minute}M")
 
-            if r['code'].isalpha():
-                if len(r['code']) == lenghth:
-                    if r['code'] != code:
-                        print('Check result 2captcha')
-                        return r
-                    else:
-                        solver.report(r['captchaId'], False)
-                        print(f'Time: {count}. The result {r["code"]} is not right.Try again')
-                else:
-                    solver.report(r['captchaId'], False)
-                    print(f'Time: {count}. The length of result {r["code"]} is not right.Try again')
-            else:
-                solver.report(r['captchaId'], False)
-                print(f'Time: {count}. The result {r["code"]} contants number.Try again')
+			if "I AM BACK WITH" in huntbot_string:
+				print(f"{at()}{color.okblue} [INFO] {color.reset} Claimed Huntbot")
+				if client.sacrifice.lower() == "yes" and client.stopped != True:
+					bot.typingAction(str(client.channel))
+					sleep(3)
+					bot.sendMessage(str(client.channel), "owo sc all")
+					print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo sc all")
+				bot.typingAction(str(client.channel))
+				sleep(3)
+				bot.sendMessage(str(client.channel), "owo hb 1")
+				print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 1")
 
-    def solvepassword(image_url, msgs):
-        if captchaver == '105':
-            user = bot.gateway.session.user
-            from api import CAPI
-            api = CAPI(user['id'])
-            encoded_string = b64encode(get(image_url).content).decode('utf-8')
-            r = api.solve(Json={'data': encoded_string, 'len': msgs[msgs.find("letter word") - 2]})
-            if r:
-                ui.slowPrinting(f"{color.okcyan}[INFO] {color.reset}Solved Password huntbot [Code: {r['code']}]")
-                bot.typingAction(str(client.channel))
-                sleep(3)
-                bot.sendMessage(str(client.channel), f"owo hb 30000 {r['code']}")
-                print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 30000 {r['code']}")
-                msgs = bot.getMessages(str(client.channel), num=10)
-                msgs = msgs.json()
-                for i in range(len(msgs)):
-                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'I WILL BE BACK IN' in msgs[i]['content'] and not client.stopped:
-                        api.report(Json={'captchaId': r['captchaId'], 'correct': 'True'})
-                        print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [INFO] {color.reset} Password huntbot is right")
-                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'WRONG PASSWORD' in msgs[i]['content'] and not client.stopped:
-                        api.report(Json={'captchaId': r['captchaId'], 'correct': 'False'})
-                        print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} Password huntbot is wrong")
-                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'have enough' in msgs[i]['content'] and not client.stopped:
-                        print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} You dont have enough Cowocy")
-        if captchaver == 'vip':
-            encoded_string = b64encode(get(image_url).content).decode('utf-8')
-            countlen = int(msgs[msgs.find("letter word") - 2])
-            captchabalance = solver.balance()
-            if captchabalance == 0:
-                print(f'Balance 2CAPCHA : {captchabalance} $ Out of money')
-                webhookPing(f"<@{client.webhookping}> [FAIL]Out of money . User: {client.username} <@{client.userid}>")
-                webhookPing(f"=========================================================================================")
-                print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} You dont have enough Money in 2Captcha Balance")
-                # Solve by 2Captcha
-                r = getPassword(encoded_string, countlen, 0)
 
-                captchabalance = solver.balance()
-                print(f'Balance 2CAPCHA : {captchabalance} $')
-                print(f"{color.okcyan}[INFO] {color.reset}Solving Password at 1st chance: [Code: {r['code']}]")
-
-                bot.typingAction(str(client.channel))
-                sleep(3)
-                bot.sendMessage(str(client.channel), f"owo hb 30000 {r['code']}")
-                print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 30000 {r['code']}")
-
-                msgs = bot.getMessages(str(client.channel), num=10)
-                msgs = msgs.json()
-                for i in range(len(msgs)):
-                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'I WILL BE BACK IN' in msgs[i]['content'] and not client.stopped:
-                        solver.report(r['captchaId'], True)
-                        print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [INFO] {color.reset} Password huntbot is right")
-
-                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'WRONG PASSWORD' in msgs[i]['content'] and not client.stopped:
-                        solver.report(r['captchaId'], False)
-                        print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} Password huntbot is wrong.Try again")
-                        r2 = getPassword(encoded_string, countlen, r['code'])
-                        captchabalance = solver.balance()
-                        print(f'Balance 2CAPCHA : {captchabalance} $')
-                        print(f"{color.okcyan}[INFO] {color.reset}Solving Password at 2nd chance: [Code: {r2['code']}]")
-
-                        bot.typingAction(str(client.channel))
-                        sleep(3)
-                        bot.sendMessage(str(client.channel), f"owo hb 30000 {r['code']}")
-                        print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 30000 {r['code']}")
-
-                        msgs = bot.getMessages(str(client.channel), num=10)
-                        msgs = msgs.json()
-                        for i in range(len(msgs)):
-                            if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'I WILL BE BACK IN' in msgs[i]['content'] and not client.stopped:
-                                solver.report(r['captchaId'], True)
-                                print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [INFO] {color.reset} Password huntbot is right")
-
-                            if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'WRONG PASSWORD' in msgs[i]['content'] and not client.stopped:
-                                solver.report(r['captchaId'], True)
-                                print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [INFO] {color.reset} Password huntbot is Wrong")
-
-                            if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'have enough' in msgs[i]['content'] and not client.stopped:
-                                print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} You dont have enough Cowocy")
-
-                    if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'have enough' in msgs[i]['content'] and not client.stopped:
-                        print(f"{at()}{color.okcyan} User: {client.username}{color.warning} [WARNING] {color.reset} You dont have enough 30k Cowocy")
-
-    if resp.event.message:
-        m = resp.parsed.auto()
-        if m['channel_id'] == client.channel and client.username in m['content'] and "here is your password" in m['content'] and not client.stopped:
-            print(f'{at()}{color.warning} !! [HUNTBOT] !! {color.reset} Huntbot Password REQUİRED')
-            print(f"{at()}{color.okblue} [INFO] {color.reset} Waiting solving Password")
-            return solvepassword(m['attachments'][0]['url'], m['content'])
 
 
 def runnersell():
