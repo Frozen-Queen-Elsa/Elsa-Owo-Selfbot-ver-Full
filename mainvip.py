@@ -1322,9 +1322,6 @@ def substring_after(s, substring):
 def substring_before(s, substring):
     return s.partition(substring)[0]
 
-
-
-
 def runnerhuntbot():
     if client.rhuntbot.lower() == "yes" and client.stopped != True:
         bot.typingAction(str(client.channel))
@@ -1372,7 +1369,6 @@ def runnerhuntbot():
                 sleep(3)
                 bot.sendMessage(str(client.channel), "owo hb 1")
                 print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 1")
-
 
 @bot.gateway.command()
 def checkhuntbot(resp):
