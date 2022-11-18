@@ -1311,10 +1311,16 @@ def runnerdaily():
         else:
             if "Nu" in daily_string:
                 daily_string = findall('[0-9]+', daily_string)
-                client.wait_time_daily = str(
-                    int(daily_string[0]) * 3600 + int(daily_string[1]) * 60 + int(daily_string[2]))
+                client.wait_time_daily = str(int(daily_string[0]) * 3600 + int(daily_string[1]) * 60 + int(daily_string[2]))
                 print(f"{at()}{color.okblue} [INFO] {color.reset} Next Daily: {client.wait_time_daily}s")
 
+
+def substring_after(s, substring):
+    return s.partition(substring)[2]
+
+
+def substring_before(s, substring):
+    return s.partition(substring)[0]
 
 def runnerhuntbot():
     if client.rhuntbot.lower() == "yes" and client.stopped != True:
@@ -1338,9 +1344,19 @@ def runnerhuntbot():
      
         else:
             if "I WILL BE BACK IN" in huntbot_string:
+                huntbot_string=substring_after(huntbot_string,"I WILL BE BACK IN ")
+                huntbot_string=substring_before(huntbot_string,"DONE")
+                huntbot_string=substring_before(huntbot_string,":blank:")
+                hour_huntbot_string=substring_before(huntbot_string,"H")
+                minute_huntbot_string=substring_before(substring_after(huntbot_string,"H"),"M")
+                minute_huntbot_string=minute_huntbot_string.lstrip()
+                wait_hour=int(hour_huntbot_string)
+                wait_minute=int(minute_huntbot_string)
+                client.wait_time_huntbot=wait_hour*3600+wait_minute*60
                 huntbot_string = findall('[0-9]+', huntbot_string)
                 client.wait_time_huntbot = str(int(huntbot_string[0]) * 3600 + int(huntbot_string[1]) * 60)
-                print(f"{at()}{color.okblue} [INFO] {color.reset} Next Huntbot: {client.wait_time_huntbot}s")
+
+                print(f"{at()}{color.okblue} [INFO] {color.reset} Next Huntbot: {wait_hour}H {wait_minute}M")
 
             if "I AM BACK WITH" in huntbot_string:
                 print(f"{at()}{color.okblue} [INFO] {color.reset} Claimed Huntbot")
@@ -1354,7 +1370,7 @@ def runnerhuntbot():
                 bot.sendMessage(str(client.channel), "owo hb 1")
                 print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 1")
 
-
+@bot.gateway.command()
 def checkhuntbot(resp):
     def getPassword(img, lenghth, code):
         count = 0
@@ -1564,9 +1580,8 @@ def thread105():
                 if time() - main > random.randint(900, 1200) and client.stopped != True:
                     main = time()
                     print(f"{at()}{color.okblue} [INFO]{color.reset} Sleeping")
-                    sleep(random.randint(250, 450))
-                # subprocess.call(sys.executable + ' "' + os.path.realpath(__file__) + '"')
-                # os.system('python "mainvip.py"')
+                    sleep(random.randint(250, 400))
+                    os.system('python "mainvip.py"')
 
             # Daily Mode
             if client.daily.lower() == 'yes':
@@ -1574,9 +1589,9 @@ def thread105():
                     runnerdaily()
                     daily_time = time()
 
-            # Hunt Mode
+            # Huntbot Mode
             if client.daily.lower() == 'yes':
-                if time() - huntbot_time > 900 and client.stopped != True:
+                if time() - huntbot_time > client.wait_time_huntbot and client.stopped != True:
                     runnerhuntbot()
                     huntbot_time = time()
 
@@ -1599,6 +1614,10 @@ def thread105():
                     client.channelspam = channel[0]
                     ui.slowPrinting(f"{at()}{color.okcyan} [INFO] {color.reset} Changed Channel Spaming To : {channel[1]}")
             sleep(0.1)
+
+
+
+
 
 
 def loopie():
