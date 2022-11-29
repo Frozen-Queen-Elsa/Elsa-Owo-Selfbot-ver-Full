@@ -1461,45 +1461,45 @@ def runnerhuntbot():
 			else:
 				i += 1
 
-		else:
-			if "I WILL BE BACK IN" in huntbot_string:
-				huntbot_string = substring_after(huntbot_string, "I WILL BE BACK IN ")
-				huntbot_string = substring_before(huntbot_string, "DONE")
-				huntbot_string = substring_before(huntbot_string, ":blank:")
-				hour_huntbot_string = substring_before(huntbot_string, "H")
-				minute_huntbot_string = substring_before(substring_after(huntbot_string, "H"), "M")
-				minute_huntbot_string = minute_huntbot_string.lstrip()
-				wait_hour = int(hour_huntbot_string)
-				wait_minute = int(minute_huntbot_string)
-				client.wait_time_huntbot = wait_hour * 3600 + wait_minute * 60
+		
+		if "I WILL BE BACK IN" in huntbot_string:
+			huntbot_string = substring_after(huntbot_string, "I WILL BE BACK IN ")
+			huntbot_string = substring_before(huntbot_string, "DONE")
+			huntbot_string = substring_before(huntbot_string, ":blank:")
+			hour_huntbot_string = substring_before(huntbot_string, "H")
+			minute_huntbot_string = substring_before(substring_after(huntbot_string, "H"), "M")
+			minute_huntbot_string = minute_huntbot_string.lstrip()
+			wait_hour = int(hour_huntbot_string)
+			wait_minute = int(minute_huntbot_string)
+			client.wait_time_huntbot = wait_hour * 3600 + wait_minute * 60
 
-				print(f'{client.wait_time_huntbot}')
-				print(f"{at()}{color.okblue} [INFO] {color.reset} Next Huntbot: {wait_hour}H {wait_minute}M")
+			print(f'{client.wait_time_huntbot}')
+			print(f"{at()}{color.okblue} [INFO] {color.reset} Next Huntbot: {wait_hour}H {wait_minute}M")
 
-			if " Password will reset in" in huntbot_string:
-				huntbot_string = substring_after(huntbot_string, "Password will reset in ")
-				huntbot_string = substring_before(huntbot_string, " minutes")
+		if " Password will reset in" in huntbot_string:
+			huntbot_string = substring_after(huntbot_string, "Password will reset in ")
+			huntbot_string = substring_before(huntbot_string, " minutes")
 
 
-				minute_huntbot_string = huntbot_string.lstrip()
+			minute_huntbot_string = huntbot_string.lstrip()
 
-				wait_minute = int(minute_huntbot_string)
-				client.wait_time_huntbot = wait_minute * 60
+			wait_minute = int(minute_huntbot_string)
+			client.wait_time_huntbot = wait_minute * 60
 
-				print(f'{client.wait_time_huntbot}')
-				print(f"{at()}{color.okblue} [INFO] {color.reset} Next Huntbot:{wait_minute}M")
+			print(f'{client.wait_time_huntbot}')
+			print(f"{at()}{color.okblue} [INFO] {color.reset} Next Huntbot:{wait_minute}M")
 
-			if "I AM BACK WITH" in huntbot_string:
-				print(f"{at()}{color.okblue} [INFO] {color.reset} Claimed Huntbot")
-				if client.sacrifice.lower() == "yes" and client.stopped != True:
-					bot.typingAction(str(client.channel))
-					sleep(3)
-					bot.sendMessage(str(client.channel), "owo sc all")
-					print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo sc all")
+		if "I AM BACK WITH" in huntbot_string:
+			print(f"{at()}{color.okblue} [INFO] {color.reset} Claimed Huntbot")
+			if client.sacrifice.lower() == "yes" and client.stopped != True:
 				bot.typingAction(str(client.channel))
 				sleep(3)
-				bot.sendMessage(str(client.channel), "owo hb 1")
-				print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 1")
+				bot.sendMessage(str(client.channel), "owo sc all")
+				print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo sc all")
+			bot.typingAction(str(client.channel))
+			sleep(3)
+			bot.sendMessage(str(client.channel), "owo hb 1")
+			print(f"{at()}{color.okcyan} User: {client.username}{color.okgreen} [SENT] {color.reset} owo hb 1")
 
 
 
