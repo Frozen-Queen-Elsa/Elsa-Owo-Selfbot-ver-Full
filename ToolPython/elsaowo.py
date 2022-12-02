@@ -272,22 +272,21 @@ def CheckCaptcha(resp):
                 from api import CAPI
                 api = CAPI(client.userid, client.solve['server'])
                 encoded_string = b64encode(get(image_url).content).decode('utf-8')
+                print(f"{color.okcyan}[INFO] {color.reset}Solving Captcha...")
                 r = api.solve(Json={'data': encoded_string, 'len': captcha_mes[captcha_mes.find("letter word") - 2]})
                 if r:
                     print(f"{color.okcyan}[INFO] {color.reset}Solved Captcha [Code: {r['code']}]")
                     bot.sendMessage(client.dmsid, r['code'])
                     sleep(10)
-                    captcha_mes = bot.getMessages(client.dmsid)
+                    mes = bot.getMessages(client.dmsid)
                     try:
-                        captcha_mes = json.loads(captcha_mes.text[1:-1]) if type(captcha_mes.json()) is list else {'author': {'id': '0'}}
+                        mes = mes[0]
                     except Exception as e:
-
-                        webhook.webhookping(client.username, client.userid)
-                        threadcaptcha.start()
+                        print(str(e))
                         print(f"{color.okcyan}[INFO] {color.reset}There's An Issue With ReRunner")
                         sleep(2)
                         return "captcha"
-                    if msgs['author']['id'] == client.OwOID and "verified" in msgs['content']:
+                    if mes['author']['id'] == client.OwOID and "verified" in mes['content']:
                         api.report(Json={'captchaId': r['captchaId'], 'correct': 'True'})
                         return "solved"
                     else:
@@ -345,13 +344,12 @@ def CheckCaptcha(resp):
 
             answer = SolveCaptcha(encoded_string, count_len, hint, answer1, answer2, time)
             mes = bot.getMessages(client.dmsid)
-            try:
-                mes = json.loads(mes.text[1:-1]) if type(mes.json()) is list else {'author': {'id': '0'}}
-            except Exception as e:
 
-                print(f"{color.okcyan}[INFO] {color.reset}There's An Issue With Re Runner")
-                webhook.webhookPing(f"<@{client.webhook['pingid']}> There's An Issue With Re Runner . User: {client.username} <@{client.userid}>")
-                webhook.webhookPing(f"=========================================================================================")
+            try:
+                mes = mes[0]
+            except Exception as e:
+                print(str(e))
+                print(f"{color.okcyan}[INFO] {color.reset}There's An Issue With ReRunner")
                 sleep(2)
                 return "captcha"
             if mes['author']['id'] == client.OwOID and "verified" in mes['content']:
@@ -472,32 +470,25 @@ def CheckCaptcha(resp):
                     return "captcha"
                 if client.username in m['content'] and any(captcha in m['content'].lower() for captcha in ['(1/5)', '(2/5)', '(3/5)', '(4/5)', '(5/5)']):
                     msgs = bot.getMessages(client.dmsid)
-                    msgs = msgs.json()
-                    if type(msgs) is dict:
-                        client.stopped = True
-                        print(f'{at()}{color.reset}{color.warning} !! [CAPTCHA] !! {color.reset} ACTION REQUİRED')
-                        return "captcha"
-                    if client.username in m['content'] and msgs[0]['author']['id'] == client.OwOID and '⚠' in msgs[0]['content'] and msgs[0]['attachments']:
-                        print(f'{at()}{color.reset}{color.warning} !! [CAPTCHA] !! {color.reset} ACTION REQUİRED')
-                        if client.twocaptcha['enable']:
+                    print(f'{color.warning}{msgs}{color.reset}')
+
+                    if msgs[0]['author']['id'] == client.OwOID and '⚠' in msgs[0]['content'] and msgs[0]['attachments'] and not client.stopped:
+                        print(f'{at()}{color.warning} !! [CAPTCHA] !! {color.reset} ACTION REQUİRED')
+                        if client.solve['enable'] and not client.stopped and not client.twocaptcha['enable']:
+                            client.stopped = True
+                            return SolveFree(msgs[0]['attachments'][0]['url'], msgs[0]['content'])
+                        elif client.twocaptcha['enable'] and not client.stopped:
                             client.stopped = True
                             return SolveVIP(msgs[0]['attachments'][0]['url'], msgs[0]['content'], "", 0, 0, 1)
                         else:
-                            if client.solve['enable'] and not client.stopped:
-                                client.stopped = True
-                                return SolveFree(msgs[0]['attachments'][0]['url'], msgs[0]['content'])
-                            else:
-                                client.stopped = True
-                                return "captcha"
-
-                    elif msgs[0]['author']['id'] == client.OwOID and 'link' in msgs[0]['content'].lower():
+                            client.stopped = True
+                            return "captcha"
+                    elif msgs[0]['author']['id'] == client.OwOID and 'link' in msgs[0]['content'].lower() and not client.stopped:
                         client.stopped = True
-                        # webhookPing(f"<@{client.webhookping}> [WARNIG] CAPTCHA LINK. User: {client.username} <@{client.userid}>")
-                        # threadcaptcha.start()
                         return SolveLink()
 
+
                     msgs = bot.getMessages(str(client.channel), num=10)
-                    msgs = msgs.json()
                     for i in range(len(msgs)):
                         if client.username in msgs[i]['content'] and msgs[i]['author']['id'] == client.OwOID and 'solving the captcha' in msgs[i]['content'].lower() and not client.stopped:
                             print(f'{at()}{color.reset}{color.warning} !! [CAPTCHA] !! {color.reset} ACTION REQUİRED')
