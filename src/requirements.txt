@@ -1,4 +1,4 @@
-discum
+
 discord_webhook
 inputimeout
 playsound==1.2.2
