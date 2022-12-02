@@ -1,0 +1,4 @@
+<class 'TypeError'>
+ __init__() missing 1 required positional argument: 'bot'
+ <traceback object at 0x00000217F313CF80>
+

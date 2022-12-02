@@ -1,0 +1,45 @@
+{
+    "status": {
+        "number": 10,
+        "status_1": {
+            "stt": "",
+            "time": 5
+        },
+        "status_2": {
+            "stt": "",
+            "time": 5
+        },
+        "status_3": {
+            "stt": "",
+            "time": 5
+        },
+        "status_4": {
+            "stt": "",
+            "time": 5
+        },
+        "status_5": {
+            "stt": "",
+            "time": 5
+        },
+        "status_6": {
+            "stt": "",
+            "time": 5
+        },
+        "status_7": {
+            "stt": "",
+            "time": 5
+        },
+        "status_8": {
+            "stt": "",
+            "time": 5
+        },
+        "status_9": {
+            "stt": "",
+            "time": 5
+        },
+        "status_10": {
+            "stt": "",
+            "time": 5
+        }
+    }
+}

@@ -1,9 +1,0 @@
-git+https://github.com/ericz/Discord-S.C.U.M
-discord_webhook
-inputimeout
-pygame
-playsound==1.2.2
-2captcha-python
-selenium
-undetected-chromedriver==2.1.1
-
