@@ -10,7 +10,7 @@ def install():
     print(f"Installing Requirements Package...")
     time.sleep(1)
     python = executable
-    check_call([python, '-m', 'pip', 'install', '-r', './src/requirements.txt'])
+    check_call([python, '-m', 'pip', 'install', '-r', '../src/requirements.txt'])
     print("Successfully Installed Requirements Package! You're Good To Go")
 if __name__ == "__main__":
     install()
